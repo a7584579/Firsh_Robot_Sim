@@ -1,0 +1,449 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sdf version="1.10">
+    <world name="my_world">
+
+        <physics name="1ms" type="ignored">
+        <!-- The type is the type of the dynamic engine (physics library)
+        There are options like, Ode, Bullet, Simbody and Dart-->
+            <max_step_size>0.001</max_step_size>
+            <!--the maximum time at which every system in simulation can interact with the states of the world-->
+            <real_time_factor>1.0</real_time_factor>
+            <!-- ratio of simulation time to real time -->
+        </physics>
+
+        <plugin
+            filename="gz-sim-physics-system"
+            name="gz::sim::systems::Physics">
+        </plugin>
+
+        <plugin
+            filename="gz-sim-user-commands-system"
+            name="gz::sim::systems::UserCommands">
+        </plugin>
+
+        <plugin
+            filename="gz-sim-scene-broadcaster-system"
+            name="gz::sim::systems::SceneBroadcaster">
+        </plugin>
+
+        <light type="directional" name="sun">
+            <!--<light> specifies the light source in the world-->
+            <!--<type> of the light can be point, directional or spot-->
+            <cast_shadows>true</cast_shadows>
+            <!-- light will cast shadows-->
+            <pose>0 0 10 0 0 0</pose>
+            <!-- the position (x,y,z) and orientation (roll, pitch, yaw) of the light elemen-->
+            <!--with respect to the frame mentioned in the relative_to attribute-->
+            <diffuse>0.8 0.8 0.8 1</diffuse>
+            <specular>0.2 0.2 0.2 1</specular>
+            <!--diffuse and specular light color.-->
+            <attenuation>
+                <range>1000</range>
+                <!--range of light.-->
+                <constant>0.9</constant>
+                <!--constant attenuation factor, 1 never attenuate and 0 complete attenuation-->
+                <linear>0.01</linear>
+                <!--the linear attenuation factor, 1 means attenuate evenly over the distance-->
+                <quadratic>0.001</quadratic>
+            </attenuation>
+            <direction>-0.5 0.1 -0.9</direction>
+            <!-- direction of the light, only applicable to spot and directional light-->
+        </light>
+
+        <model name="ground_plane">
+            <static>true</static>
+            <!--define a static model to improve sim performace-->
+            <link name="link">
+            <!--define a physical link of the model-->
+            <!--define a physical entity-->
+                <collision name="collision">
+                <!--define the physics collision entity-->
+                    <geometry>
+                        <plane>
+                        <!--define the collision entity is a plane-->
+                            <normal>0 0 1</normal>
+                            <!--use normal vector to define the positive side of collision plane-->
+                            <!--didn't define size, use the value same as visual-->
+                        </plane>
+                    </geometry>
+                </collision>
+                <visual name="visual">
+                    <geometry>
+                        <plane>
+                            <normal>0 0 1</normal>
+                            <size>100 100</size>
+                        </plane>
+                    </geometry>
+                    <material>
+                        <ambient>0.8 0.8 0.8 1</ambient>
+                        <diffuse>0.8 0.8 0.8 1</diffuse>
+                        <specular>0.8 0.8 0.8 1</specular>
+                        <!--RGBA:0.8 0.8 0.8 1 means: opaque light gray-->
+                    </material>
+                </visual>
+            </link>
+        </model>
+
+        <model name='vehicle_blue' canonical_link='chassis'>
+            <pose relative_to='world'>0 0 0 0 0 0</pose>
+            <!--<pose>X Y Z R P Y</pose>-->
+            <!-- X Y Z represent the position of the frame
+            R P Y represent the orientation in roll pitch yaw-->
+            <link name='chassis'>
+                <pose relative_to='__model__'>0.5 0 0.4 0 0 0</pose>
+                <inertial> <!--inertial properties of the link mass, inertia matix-->
+                    <mass>1.14395</mass>
+                    <inertia>
+                        <ixx>0.095329</ixx>
+                        <ixy>0</ixy>
+                        <ixz>0</ixz>
+                        <iyy>0.381317</iyy>
+                        <iyz>0</iyz>
+                        <izz>0.476646</izz>
+                    </inertia>
+                </inertial>
+                <visual name='visual'>
+                    <geometry>
+                        <box>
+                            <size>2.0 1.0 0.5</size>
+                        </box>
+                    </geometry>
+                    <!--let's add color to our link-->
+                    <material>
+                        <ambient>0.0 0.0 1.0 1</ambient>
+                        <diffuse>0.0 0.0 1.0 1</diffuse>
+                        <specular>0.0 0.0 1.0 1</specular>
+                    </material>
+                </visual>
+                <collision name='collision'>
+                    <geometry>
+                        <box>
+                            <size>2.0 1.0 0.5</size>
+                        </box>
+                    </geometry>
+                </collision>
+            </link>
+
+            <link name='left_wheel'>
+                <pose relative_to="chassis">-0.5 0.6 0 -1.5707 0 0</pose>
+                <inertial>
+                    <mass>1</mass>
+                    <inertia>
+                        <ixx>0.043333</ixx>
+                        <ixy>0</ixy>
+                        <ixz>0</ixz>
+                        <iyy>0.043333</iyy>
+                        <iyz>0</iyz>
+                        <izz>0.08</izz>
+                    </inertia>
+                </inertial>
+                <visual name='visual'>
+                    <geometry>
+                        <cylinder>
+                            <radius>0.4</radius>
+                            <length>0.2</length>
+                        </cylinder>
+                    </geometry>
+                    <material>
+                        <ambient>1.0 0.0 0.0 1</ambient>
+                        <diffuse>1.0 0.0 0.0 1</diffuse>
+                        <specular>1.0 0.0 0.0 1</specular>
+                    </material>
+                </visual>
+                <collision name='collision'>
+                    <geometry>
+                        <cylinder>
+                            <radius>0.4</radius>
+                            <length>0.2</length>
+                        </cylinder>
+                    </geometry>
+                </collision>
+            </link>
+            <!--The same as left wheel but with different position-->
+            <link name='right_wheel'>
+                <pose relative_to="chassis">-0.5 -0.6 0 -1.5707 0 0</pose> <!--angles are in radian-->
+                <inertial>
+                    <mass>1</mass>
+                    <inertia>
+                        <ixx>0.043333</ixx>
+                        <ixy>0</ixy>
+                        <ixz>0</ixz>
+                        <iyy>0.043333</iyy>
+                        <iyz>0</iyz>
+                        <izz>0.08</izz>
+                    </inertia>
+                </inertial>
+                <visual name='visual'>
+                    <geometry>
+                        <cylinder>
+                            <radius>0.4</radius>
+                            <length>0.2</length>
+                        </cylinder>
+                    </geometry>
+                    <material>
+                        <ambient>1.0 0.0 0.0 1</ambient>
+                        <diffuse>1.0 0.0 0.0 1</diffuse>
+                        <specular>1.0 0.0 0.0 1</specular>
+                    </material>
+                </visual>
+                <collision name='collision'>
+                    <geometry>
+                        <cylinder>
+                            <radius>0.4</radius>
+                            <length>0.2</length>
+                        </cylinder>
+                    </geometry>
+                </collision>
+            </link>
+
+            <!--frame is used for 定义​​坐标系（Coordinate Frames）-->
+            <frame name="caster_frame" attached_to='chassis'>
+                <pose>0.8 0 -0.2 0 0 0</pose>
+                <!--We didn’t use the relative_to attribute 
+                so the pose is with respect to the frame named in the attached_to attribute
+                chassis in our case.-->
+            </frame>
+
+            <!--caster wheel-->
+            <link name='caster'><!--万向轮-->
+                <pose relative_to='caster_frame'/>
+                <!--we closed the pose tag without defining the position or the orientation-->
+                <!-- the pose of the link is the same as (identity) the frame in relative_to-->
+                <inertial>
+                    <mass>1</mass>
+                    <inertia>
+                        <ixx>0.016</ixx>
+                        <ixy>0</ixy>
+                        <ixz>0</ixz>
+                        <iyy>0.016</iyy>
+                        <iyz>0</iyz>
+                        <izz>0.016</izz>
+                    </inertia>
+                </inertial>
+                <visual name='visual'>
+                    <geometry>
+                        <sphere>
+                            <radius>0.2</radius>
+                        </sphere>
+                    </geometry>
+                    <material>
+                        <ambient>0.0 1 0.0 1</ambient>
+                        <diffuse>0.0 1 0.0 1</diffuse>
+                        <specular>0.0 1 0.0 1</specular>
+                    </material>
+                </visual>
+                <collision name='collision'>
+                    <geometry>
+                        <sphere>
+                            <radius>0.2</radius>
+                        </sphere>
+                    </geometry>
+                </collision>
+            </link>
+
+            <joint name='left_wheel_joint' type='revolute'>
+                <pose relative_to='left_wheel'/>
+                <!--The pose of the joint is the same as the child link frame
+                which is the left_wheel frame.-->
+
+                <!--The axis of rotation can be any frame, not just the parent or the child link.-->
+                <parent>chassis</parent>
+                <child>left_wheel</child>
+                <axis>
+                    <xyz expressed_in='__model__'>0 1 0</xyz> 
+                    <!--can be defined as any frame or even arbitrary frames-->
+                    <!--We chose the y-axis with respect to the model frame
+                    so we put 1 in the y element and zeros in the others.-->
+                    <limit>
+                        <lower>-1.79769e+308</lower>    <!--negative infinity-->
+                        <upper>1.79769e+308</upper>     <!--positive infinity-->
+                    </limit>
+                </axis>
+            </joint>
+            <joint name='right_wheel_joint' type='revolute'>
+                <pose relative_to='right_wheel'/>
+                <parent>chassis</parent>
+                <child>right_wheel</child>
+                <axis>
+                    <xyz expressed_in='__model__'>0 1 0</xyz>
+                    <limit>
+                        <lower>-1.79769e+308</lower>    <!--negative infinity-->
+                        <upper>1.79769e+308</upper>     <!--positive infinity-->
+                    </limit>
+                </axis>
+            </joint>
+            <joint name='caster_wheel' type='ball'>
+                <parent>chassis</parent>
+                <child>caster</child>
+            </joint>
+
+            <plugin
+                filename="gz-sim-diff-drive-system"
+                name="gz::sim::systems::DiffDrive">
+                <left_joint>left_wheel_joint</left_joint>
+                <right_joint>right_wheel_joint</right_joint>
+                <!-- In the <left_joint> and <right_joint> tags 
+                we define the joints which connect the left and the right wheel 
+                with the body of the robot-->
+                <wheel_separation>1.2</wheel_separation>、
+                <!--<wheel_separation> takes the distance between the two wheels-->
+                <wheel_radius>0.4</wheel_radius>
+                <odom_publish_frequency>1</odom_publish_frequency>
+                <topic>cmd_vel</topic>
+                <!--cmd_vel is the input <topic> to the DiffDrive plugin.-->
+            </plugin>
+        </model>
+
+        <!-- Moving Forward-->
+        <plugin filename="gz-sim-triggered-publisher-system"
+                name="gz::sim::systems::TriggeredPublisher">
+            <input type="gz.msgs.Int32" topic="/keyboard/keypress">
+            <!--.It accepts messages of type gz.msgs.Int32 on the /keyboard/keypress topic -->
+                <match field="data">16777235</match>
+                <!-- if the value in the data field matches 16777235(Up arrow key)-->
+            </input>
+            <output type="gz.msgs.Twist" topic="/cmd_vel">
+                linear: {x: 0.5}, angular: {z: 0.0}
+            </output>
+        </plugin>
+
+        <!-- Moving Backward-->
+        <plugin filename="gz-sim-triggered-publisher-system"
+                name="gz::sim::systems::TriggeredPublisher">
+            <input type="gz.msgs.Int32" topic="/keyboard/keypress">
+                <match field="data">16777237</match>
+            </input>
+            <output type="gz.msgs.Twist" topic="/cmd_vel">
+                linear: {x: -0.5}, angular: {z: 0.0}
+            </output>
+        </plugin>
+
+        <include>
+            <uri>
+            model://Walkingactor
+            <!--the filefold of your model files-->
+            </uri>
+            <pose>0 0 1 0 0 0</pose>
+        </include>
+
+        <!--
+            <include>
+            <name>Coke0</name>
+            <pose>0 0 0 0 0 0</pose>
+            <uri>https://fuel.gazebosim.org/1.0/OpenRobotics/models/Coke</uri>
+        </include>
+        <include>
+            <name>Coke1</name>
+            <pose>0 0.1 0 0 0 0</pose>
+            <uri>https://fuel.gazebosim.org/1.0/OpenRobotics/models/Coke</uri>
+        </include>
+        -->
+
+    </world>
+</sdf>
+
+    <!--For gui control
+        <gui fullscreen="0">
+            <!-- 3D scene -->
+            <!--MinimalScene and GzSceneManager are responsible for displaying the 3D scene of our world-->
+            <plugin filename="MinimalScene" name="3D View">
+                <gz-gui>
+                    <title>3D View</title>
+                    <property type="bool" key="showTitleBar">false</property>
+                    <property type="string" key="state">docked</property>
+                </gz-gui>
+
+                <engine>ogre2</engine>
+                <!--rendering engine can choose ogre /ogre2-->
+                <scene>scene</scene>
+                <ambient_light>0.4 0.4 0.4</ambient_light>
+                <background_color>0.8 0.8 0.8</background_color>
+                <!--specify the ambient and the background color of the scene-->
+                <camera_pose>-6 0 6 0 0.5 0</camera_pose>
+                <!--specifies the X Y Z position of the camera-->
+                <camera_clip>
+                <!--定义相机视锥体的裁剪范围-->
+                    <near>0.25</near>
+                    <far>25000</far>
+                </camera_clip>
+            </plugin>
+
+            <plugin filename="GzSceneManager" name="Scene Manager">
+                <gz-gui>
+                    <property key="resizable" type="bool">false</property>
+                    <property key="width" type="double">5</property>
+                    <property key="height" type="double">5</property>
+                    <property key="state" type="string">floating</property>
+                    <!--state of the plugin-->
+                    <property key="showTitleBar" type="bool">false</property>
+                    <!--will show the blue title bar over the plugin with the name mentioned in the <title> tag-->
+                </gz-gui>
+            </plugin>
+
+            <!-- World control -->
+            <plugin filename="WorldControl" name="World control">
+                <gz-gui>
+                    <title>World control</title>
+                    <property type="bool" key="showTitleBar">false</property>
+                    <property type="bool" key="resizable">false</property>
+                    <property type="double" key="height">72</property>
+                    <property type="double" key="width">121</property>
+                    <property type="double" key="z">1</property>
+
+                    <property type="string" key="state">floating</property>
+                    <anchors target="3D View">
+                    <line own="left" target="left"/>
+                    <line own="bottom" target="bottom"/>
+                    </anchors>
+                </gz-gui>
+
+                <play_pause>true</play_pause>
+                <!--will we have the play-pause button on the bottom left corne-->
+                <step>true</step>
+                <start_paused>true</start_paused>
+                <!--  will simulation be paused at the start of Gazebo.-->
+                <service>/world/world_demo/control</service>
+                <stats_topic>/world/world_demo/stats</stats_topic>
+                <!--specifies the topic at which the world stats like simulation time and real time-->
+            </plugin>
+
+            <!-- World statistics -->
+            <plugin filename="WorldStats" name="World stats">
+                <!--this plugin is responsible for displaying the world statistics,
+                <sim_time>, <real_time>, <real_time_factor> and <iterations>-->
+                <gz-gui>
+                    <title>World stats</title>
+                    <property type="bool" key="showTitleBar">false</property>
+                    <property type="bool" key="resizable">false</property>
+                    <property type="double" key="height">110</property>
+                    <property type="double" key="width">290</property>
+                    <property type="double" key="z">1</property>
+
+                    <property type="string" key="state">floating</property>
+                    <anchors target="3D View">
+                    <line own="right" target="right"/>
+                    <line own="bottom" target="bottom"/>
+                    </anchors>
+                </gz-gui>
+
+                <sim_time>true</sim_time>
+                <real_time>true</real_time>
+                <real_time_factor>true</real_time_factor>
+                <iterations>true</iterations>
+                <topic>/world/world_demo/stats</topic>
+                <!--We can choose which <topic> these values will be published on-->
+                <!--in another terminal listen to the messages
+                'gz topic -e -t /world/world_demo/stats'-->
+
+            </plugin>
+
+            <!-- Entity tree -->
+            <plugin filename="EntityTree" name="Entity tree">
+                <!-- can see all the entities of our world 
+                (everything in simulation is considered an “entity”)
+                can see the different models, sun and also their links, visuals and collisions-->
+            </plugin>
+
+        </gui>
+    -->
+

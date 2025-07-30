@@ -1,0 +1,15 @@
+source /opt/ros/jazzy/setup.bash
+
+
+ros2 launch ros_gz_sim gz_sim.launch.py gz_args:=MyWorld.sdf
+
+
+ros2 launch ros_gz_sim ros_gz_sim.launch.py world_sdf_file:=empty.sdf bridge_name:=ros_gz_bridge config_file:=<path_to_your_YAML_file> use_composition:=True create_own_container:=True
+
+conda deactivate
+conda activate Pytorch_env
+
+source ./install/setup.bash
+source ./install/local_setup.bash
+colcon build --symlink-install  --packages-up-to --event-handlers console_direct+ --executor sequential/parallel
+ros2 pkg create --build-type ament_cmake --license Apache-2.0 cpp_srvcli --dependencies rclcpp example_interfaces
